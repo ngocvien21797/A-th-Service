@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký tài khoản</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f5e7ff, #d1c4e9);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 360px;
+      padding: 30px 40px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    h2 { color: #4a148c; margin-bottom: 24px; }
+    label {
+      font-size: 14px; color: #4a148c;
+      float: left; margin-top: 10px; font-weight: 500;
+    }
+    input {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid #ccc; border-radius: 8px;
+      margin-top: 6px; transition: all 0.2s;
+    }
+    input:focus {
+      outline: none; border-color: #7e57c2;
+      box-shadow: 0 0 4px #b39ddb;
+    }
+    button {
+      margin-top: 20px; width: 100%;
+      background: #7e57c2; color: white;
+      padding: 10px; border: none;
+      border-radius: 8px; cursor: pointer;
+      font-weight: bold; transition: 0.3s;
+    }
+    button:hover { background: #6a1b9a; transform: scale(1.02); }
+    #msg {
+      margin-top: 18px; font-size: 14px;
+      font-weight: 500; text-align: center;
+    }
+    .success { color: #2e7d32; }
+    .error { color: #c62828; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🧾 Đăng ký tài khoản</h2>
+    <label>Tên đăng nhập:</label>
+    <input id="username" placeholder="Nhập username">
+    <label>Mật khẩu:</label>
+    <input id="password" type="password" placeholder="Nhập password">
+    <button onclick="register()">Đăng ký</button>
+    <div id="msg"></div>
+  </div>
+
+  <script>
+    async function register() {
+      const data = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:8086/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const text = await res.text();
+        const msg = document.getElementById('msg');
+
+        if (res.ok) {
+          if (text.includes("Đăng ký thành công")) {
+            msg.textContent = "✅ Đăng ký thành công!";
+            msg.className = "success";
+          } else if (text.includes("Username")) {
+            msg.textContent = "⚠️ Tài khoản đã tồn tại!";
+            msg.className = "error";
+          } else {
+            msg.textContent = "❌ Có lỗi không xác định!";
+            msg.className = "error";
+          }
+        } else {
+          msg.textContent = "❌ Lỗi đăng ký: " + text;
+          msg.className = "error";
+        }
+
+      } catch (err) {
+        document.getElementById('msg').textContent = "⚠️ Không thể kết nối server!";
+      }
+    }
+  </script>
+</body>
+</html>
